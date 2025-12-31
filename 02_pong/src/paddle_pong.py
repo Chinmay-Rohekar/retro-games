@@ -8,6 +8,9 @@ from random import choice
 screen_width = 300
 screen_height = 500
 game_paused = False
+game_over = False
+winner_text = ""
+
 # Colors
 BLACK = (0, 0, 0)
 GRAY = (127, 127, 127)
@@ -24,10 +27,42 @@ def turn_reset():
 
 # Function to update the score
 def update_score(in_winner):
+    global game_paused, game_over, winner_text
     if in_winner == 'player':
         player.score += 1
+        if player.score == 10:
+            winner_text = "PLAYER WINS"
+            game_over = True
+            game_paused = True
+
     elif in_winner == 'opponent':
         opponent.score += 1
+        if opponent.score == 10:
+            winner_text = "OPPONENT WINS"
+            game_over = True
+            game_paused = True
+
+
+# Function to Draw the Game Over
+def draw_game_over():
+    overlay = pg.Surface((300, 500))
+    overlay.set_alpha(180)  # transparency
+    overlay.fill(BLACK)
+    screen.blit(overlay, (0, 0))
+
+    text_game_over = font.render("GAME OVER", True, WHITE)
+    rect_game_over = text_game_over.get_rect(center=(150, 220))
+    screen.blit(text_game_over, rect_game_over)
+
+    text_winner = font.render(winner_text, True, YELLOW)
+    rect_winner = text_winner.get_rect(center=(150, 280))
+    screen.blit(text_winner, rect_winner)
+
+    text_restart = pg.font.SysFont(None, 36).render(
+        "Click START to play again", True, WHITE
+    )
+    rect_restart = text_restart.get_rect(center=(150, 330))
+    screen.blit(text_restart, rect_restart)
 
 
 # Function to update the view
@@ -60,6 +95,9 @@ def update_view():
     player.draw_paddle(screen)                    # Draw the Player's Paddle
     opponent.draw_paddle(screen)                  # Draw the Opponent's Paddle
     disc.draw_ball(screen)
+
+    if game_over:
+        draw_game_over()
 
 
 # Initialize pygame
@@ -109,11 +147,15 @@ while running:
             running = False
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:  # Left click
             mouse_pos = event.pos
-            if 25 < event.pos[0] < 55 and 15 < event.pos[1] < 45:
-                if game_paused:
-                    game_paused = False
-                else:
-                    game_paused = True
+            if rect_start.collidepoint(event.pos):
+                game_paused = not game_paused
+            if rect_start.collidepoint(event.pos):
+                if game_over:
+                    player.score = 0
+                    opponent.score = 0
+                    game_over = False
+                    disc.reset_ball()
+                game_paused = False
 
     keys = pg.key.get_pressed()
 
@@ -147,7 +189,7 @@ while running:
     else:
         opponent.speed_y = 0
 
-    # Move the Paddle
+    # Move the Paddles and Disc
     if not game_paused:
         player.move()
         opponent.move()
