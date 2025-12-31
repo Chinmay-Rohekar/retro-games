@@ -1,3 +1,3 @@
-# 8-bit Games
+# Retro Games
 
-Simulating various 8-bit Games
+Simulating various Retro Brick Games
