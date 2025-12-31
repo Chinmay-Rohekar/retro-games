@@ -30,3 +30,6 @@ class Paddle:
             self.pos_y = max(300, min(self.pos_y, 480))
         else:
             self.pos_y = max(70, min(self.pos_y, 250))
+
+    def get_rect(self):
+        return pg.Rect(self.pos_x, self.pos_y, 80, 10)

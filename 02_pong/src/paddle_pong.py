@@ -1,11 +1,13 @@
 # Import the pygame library
 import pygame as pg
 from paddle import Paddle
+from ball import Ball
+from random import choice
 
 # Variables
 screen_width = 300
 screen_height = 500
-game_paused = True
+game_paused = False
 # Colors
 BLACK = (0, 0, 0)
 GRAY = (127, 127, 127)
@@ -16,6 +18,18 @@ BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 
 
+# Function to Reset Turn
+def turn_reset():
+    disc.reset_ball()
+
+# Function to update the score
+def update_score(in_winner):
+    if in_winner == 'player':
+        player.score += 1
+    elif in_winner == 'opponent':
+        opponent.score += 1
+
+
 # Function to update the view
 def update_view():
     # Fill the entire background with a color
@@ -24,9 +38,9 @@ def update_view():
     pg.draw.rect(screen, GREEN, (0,0,300,60))
     # Draw the Start/Pause Button
     if game_paused:
-        screen.blit(img_pause, rect_pause)
-    else:
         screen.blit(img_start, rect_start)
+    else:
+        screen.blit(img_pause, rect_pause)
     # Draw the Stop Button
     screen.blit(img_stop, rect_stop)
     # Draw the Score
@@ -39,9 +53,13 @@ def update_view():
     pg.draw.rect(screen, BLACK,(0, 60, 300, 440), 5)
     # Draw the Center Line
     pg.draw.line(screen, BLACK, (0, 280), (300, 280), 5)
+    # Write the names of the players
+    screen.blit(text_player, rect_player)
+    screen.blit(text_opponent, rect_opponent)
     # Draw the Paddles
     player.draw_paddle(screen)                    # Draw the Player's Paddle
     opponent.draw_paddle(screen)                  # Draw the Opponent's Paddle
+    disc.draw_ball(screen)
 
 
 # Initialize pygame
@@ -54,6 +72,10 @@ FPS = 30
 # Create the two paddles
 player = Paddle('player')
 opponent = Paddle('opponent')
+disc = Ball()
+# Randomly set the disc's speed
+disc.speed_x = choice([5, -5])
+disc.speed_y = choice([5, -5])
 
 # Load all the images
 img_start = pg.image.load('..//resources//play.png')
@@ -70,6 +92,13 @@ rect_pause.center = 40, 30
 rect_stop.center = 260, 30
 font = pg.font.SysFont(None, 60)
 
+text_player = font.render('Player', True, BLUE)
+rect_player = text_player.get_rect()
+rect_player.center = 150, 390
+text_opponent = font.render('Opponent', True, RED)
+rect_opponent = text_opponent.get_rect()
+rect_opponent.center = 150, 170
+
 # Create the main Game loop
 running = True
 while running:
@@ -78,6 +107,13 @@ while running:
         # Window Quit Event
         if event.type == pg.QUIT:
             running = False
+        if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:  # Left click
+            mouse_pos = event.pos
+            if 25 < event.pos[0] < 55 and 15 < event.pos[1] < 45:
+                if game_paused:
+                    game_paused = False
+                else:
+                    game_paused = True
 
     keys = pg.key.get_pressed()
 
@@ -112,8 +148,20 @@ while running:
         opponent.speed_y = 0
 
     # Move the Paddle
-    player.move()
-    opponent.move()
+    if not game_paused:
+        player.move()
+        opponent.move()
+        result = disc.move()
+        if result is not None:
+            update_score(result)
+
+    # Detecting Collision
+    ball_rect = disc.get_rect()
+    player_rect = player.get_rect()
+    opponent_rect = opponent.get_rect()
+    if ball_rect.colliderect(player_rect) or ball_rect.colliderect(opponent_rect):
+        disc.speed_y *= -1
+
     # Update the View
     update_view()
     pg.display.flip()
