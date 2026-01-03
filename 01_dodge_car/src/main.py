@@ -12,7 +12,11 @@ pg.init()
 screen_width, screen_height = 300, 500
 screen = pg.display.set_mode((screen_width, screen_height))
 pg.display.set_caption("Dodge Car")
+# Timer Variables
 clock = pg.time.Clock()
+timer = 0
+interval = 1  # seconds
+
 player_score = 0
 
 # Screens
@@ -38,9 +42,7 @@ BLACK = (0, 0, 0)
 
 # Function to randomly generate an enemy car
 def generate_car():
-    temp = choice([10, 110, 210])
-    temp2 = [temp, -20]
-    enemy_car = Car('enemy', temp2)
+    enemy_car = Car('enemy', [choice([10, 110, 210]), -20])
     enemy_car.speed_y = 5
     enemy_cars.append(enemy_car)
 
@@ -48,6 +50,9 @@ def generate_car():
 # Main loop
 running = True
 while running:
+    # Handling Timer
+    dt = clock.tick(60) / 1000  # seconds
+    timer += dt
     # Handle Pygame Events
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -80,16 +85,30 @@ while running:
                     current_screen = screens['game']
                 elif pauseScreen.button3.rect_button.collidepoint(mouse_x, mouse_y):
                     running = False
+            elif current_screen == scoreScreen:
+                if scoreScreen.button2.rect_button.collidepoint(mouse_x, mouse_y):
+                    current_screen = screens['menu']
+                elif scoreScreen.button2.rect_button.collidepoint(mouse_x, mouse_y):
+                    current_screen = screens['game']
+                elif scoreScreen.button3.rect_button.collidepoint(mouse_x, mouse_y):
+                    running = False
+
 
     screen.fill(WHITE)
     current_screen.draw_screen()
 
     if current_screen == gameScreen:
+        if timer >= interval:
+            generate_car()
+            timer = 0
         current_screen.draw_score(player_score)
         for enemy_car in enemy_cars:
             enemy_car.move_y()
             enemy_car.draw_car(screen)
 
+            if enemy_car.get_bounding_rect().colliderect(player_car.get_bounding_rect()):
+                current_screen = screens['score']
+                current_screen.fin_score = player_score
             if enemy_car.pos[1] > 600:
                 enemy_cars.remove(enemy_car)
                 player_score += 1
@@ -97,7 +116,6 @@ while running:
         player_car.draw_car(screen)
 
     pg.display.flip()
-    clock.tick(60)
 
 
 # Quit Pygame

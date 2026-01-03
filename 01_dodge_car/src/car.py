@@ -22,3 +22,6 @@ class Car:
 
     def draw_car(self, in_screen):
         pg.draw.rect(in_screen, BLUE, (self.pos[0], self.pos[1], 80, 100))
+
+    def get_bounding_rect(self):
+        return pg.Rect(self.pos[0], self.pos[1], 80, 100)
