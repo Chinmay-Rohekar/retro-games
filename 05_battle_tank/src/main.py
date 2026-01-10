@@ -3,7 +3,9 @@ import pygame as pg
 from values import screen_dims, game_pause_rect, game_home_rect, game_clock
 from start_screen import StartScreen
 from game_screen import GameScreen
+from pause_screen import PauseScreen
 from tank import Tank
+from enemy_tank import EnemyTank
 
 # Initialize Pygame
 pg.init()
@@ -17,13 +19,14 @@ pg.mixer.init()
 # Screens
 start_screen = StartScreen(screen)
 game_screen = GameScreen(screen)
-screens = {'start': start_screen, 'game': game_screen}
+pause_screen = PauseScreen(screen)
+screens = {'start': start_screen, 'game': game_screen, 'pause': pause_screen}
 current_screen = screens['start']
 current_screen.start_music()
 
 # Create the Player Tank
 player_tank = Tank(screen, 0, 350)
-enemy_tank = Tank(screen, 0, 50)
+enemy_tank = EnemyTank(screen, 0, 50)
 
 # Important Functions
 def change_screen(in_close_screen, in_open_screen):
@@ -71,14 +74,29 @@ while running:
 
         if current_screen == game_screen:
             if game_pause_rect.collidepoint(mouse_x, mouse_y):
-                print("Screen Paused")
+                change_screen(screens['game'], screens['pause'])
             elif game_home_rect.collidepoint(mouse_x, mouse_y):
                 change_screen(screens['game'], screens['start'])
+
+        if current_screen == pause_screen:
+            if pause_screen.button_resume_rect.collidepoint(mouse_x, mouse_y):
+                change_screen(screens['pause'], screens['game'])
+            elif pause_screen.button_main_rect.collidepoint(mouse_x, mouse_y):
+                change_screen(screens['pause'], screens['start'])
+            elif pause_screen.button_quit_rect.collidepoint(mouse_x, mouse_y):
+                running = False
+
 
     # Checking Mouse Position for Hover
     mouse_pos = pg.mouse.get_pos()
     if current_screen == start_screen:
         for button in current_screen.buttons:
+            if button.rect.collidepoint(mouse_pos):
+                button.hover_state = True  # hover color
+            else:
+                button.hover_state = False
+    if current_screen == pause_screen:
+        for button in pause_screen.buttons:
             if button.rect.collidepoint(mouse_pos):
                 button.hover_state = True  # hover color
             else:
@@ -90,6 +108,8 @@ while running:
     if current_screen == game_screen:
         player_tank.draw_tank()
         enemy_tank.draw_tank()
+        player_tank.check_collision(enemy_tank)
+        # enemy_tank.check_collision(player_tank.shells)
 
     pg.display.flip()
 

@@ -17,6 +17,7 @@ class StartScreen:
         self.buttons = [self.button_start, self.button_quit]
         self.image = pg.transform.scale(pg.image.load("../resources/images/first_screen_image.png"),
                                         screen_dims)
+        self.music_file = "..//resources//music//start_screen_music.mp3"
 
     def draw_screen(self):
         self.screen.fill(colors['WHITE'])
@@ -25,7 +26,7 @@ class StartScreen:
             button.draw_button()
 
     def start_music(self):
-        pg.mixer.music.load("..//resources//music//start_screen_music.mp3")
+        pg.mixer.music.load(self.music_file)
         pg.mixer.music.set_volume(0.5)  # 0.0 to 1.0
         pg.mixer.music.play(-1)
 

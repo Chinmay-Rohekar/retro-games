@@ -8,6 +8,7 @@ class Shell:
         self.state = False
         self.pos_x = in_pos_x
         self.pos_y = in_pos_y
+        self.rect = self.image.get_rect()
 
     def draw_shell(self):
         self.screen.blit(self.image, ((self.pos_x*75) + 31, self.pos_y))

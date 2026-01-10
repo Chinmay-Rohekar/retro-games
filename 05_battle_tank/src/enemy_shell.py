@@ -1,9 +1,9 @@
 import pygame as pg
 
-class Shell:
+class EnemyShell:
     def __init__(self, in_screen, in_pos_x, in_pos_y):
         self.screen = in_screen
-        self.image = pg.transform.scale(pg.image.load("../resources/images/shell_blue.png"),
+        self.image = pg.transform.scale(pg.image.load("../resources/images/shell_red.png"),
                                         (12, 40))
         self.state = False
         self.pos_x = in_pos_x
