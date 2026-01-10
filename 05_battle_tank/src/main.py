@@ -22,8 +22,8 @@ current_screen = screens['start']
 current_screen.start_music()
 
 # Create the Player Tank
-player_tank = Tank(screen, 0, 350, 'p')
-enemy_tank = Tank(screen, 0, 50, 'e')
+player_tank = Tank(screen, 0, 350)
+enemy_tank = Tank(screen, 0, 50)
 
 # Important Functions
 def change_screen(in_close_screen, in_open_screen):

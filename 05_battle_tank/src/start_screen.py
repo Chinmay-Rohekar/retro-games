@@ -15,7 +15,7 @@ class StartScreen:
         self.button_start_rect = pg.Rect(60, 380, 180, 40)
         self.button_quit_rect = pg.Rect(60, 440, 180, 40)
         self.buttons = [self.button_start, self.button_quit]
-        self.image = pg.transform.scale(pg.image.load("..//resources//first_screen_image.png"),
+        self.image = pg.transform.scale(pg.image.load("../resources/images/first_screen_image.png"),
                                         screen_dims)
 
     def draw_screen(self):

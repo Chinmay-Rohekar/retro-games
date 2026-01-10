@@ -6,15 +6,15 @@ class GameScreen:
     def __init__(self, in_screen):
         self.screen = in_screen
         self.font = pg.font.SysFont(None, 30)
-        self.image = pg.transform.scale(pg.image.load("..//resources//game_screen_image.png"),
+        self.image = pg.transform.scale(pg.image.load("../resources/images/game_screen_image.png"),
                                         screen_dims).convert_alpha()
         self.image.set_alpha(200)
         self.score_text = self.font.render("SCORE: 0", True, colors['WARM_GOLD'])
         self.score_rect = self.score_text.get_rect(center=(screen_dims[0] // 2, 25))
-        self.home_image = pg.transform.scale(pg.image.load("..//resources//home_icon.png"),
+        self.home_image = pg.transform.scale(pg.image.load("../resources/images/home_icon.png"),
                                              (40, 40))
-        self.pause_image = pg.transform.scale(pg.image.load("..//resources//pause_icon.png"),
-                                             (40, 40))
+        self.pause_image = pg.transform.scale(pg.image.load("../resources/images/pause_icon.png"),
+                                              (40, 40))
 
     def draw_screen(self):
         self.screen.fill(colors['WHITE'])
