@@ -109,7 +109,7 @@ while running:
             if enemy_car.get_bounding_rect().colliderect(player_car.get_bounding_rect()):
                 current_screen = screens['score']
                 current_screen.fin_score = player_score
-            if enemy_car.pos[1] > 600:
+            if enemy_car.pos_x[1] > 600:
                 enemy_cars.remove(enemy_car)
                 player_score += 1
 

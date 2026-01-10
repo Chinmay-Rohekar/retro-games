@@ -12,9 +12,9 @@ class MenuScreen:
 
     def handle_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
-            if self.play_btn.clicked(event.pos):
+            if self.play_btn.clicked(event.pos_x):
                 return GAME
-            if self.settings_btn.clicked(event.pos):
+            if self.settings_btn.clicked(event.pos_x):
                 return SETTINGS
 
     def draw(self, screen):

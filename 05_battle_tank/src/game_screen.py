@@ -15,8 +15,6 @@ class GameScreen:
                                              (40, 40))
         self.pause_image = pg.transform.scale(pg.image.load("..//resources//pause_icon.png"),
                                              (40, 40))
-        self.tank_image = pg.transform.scale(pg.image.load("..//resources//tank_red.png"),
-                                             (75, 120))
 
     def draw_screen(self):
         self.screen.fill(colors['WHITE'])
@@ -29,7 +27,6 @@ class GameScreen:
         pg.draw.rect(self.screen, colors['BLACK'], rect=(250, 5, 40, 40), border_radius=5)
         self.screen.blit(self.home_image, (250, 5))
         self.screen.blit(self.pause_image, (10, 5))
-        self.screen.blit(self.tank_image, (150, 250))
         self.screen.blit(self.score_text, self.score_rect)
 
     def start_music(self):

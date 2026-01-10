@@ -12,9 +12,9 @@ class SettingsScreen:
 
     def handle_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
-            if self.back_btn.clicked(event.pos):
+            if self.back_btn.clicked(event.pos_x):
                 return MENU
-            if self.quit_btn.clicked(event.pos):
+            if self.quit_btn.clicked(event.pos_x):
                 return QUIT
 
     def draw(self, screen):
