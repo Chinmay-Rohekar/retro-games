@@ -109,7 +109,10 @@ while running:
         player_tank.draw_tank()
         enemy_tank.draw_tank()
         player_tank.check_collision(enemy_tank)
-        # enemy_tank.check_collision(player_tank.shells)
+        enemy_tank.check_collision(player_tank)
+        if player_tank.health == 0:
+            # Game Over
+            pass
 
     pg.display.flip()
 

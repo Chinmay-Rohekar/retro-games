@@ -8,7 +8,7 @@ class EnemyTank:
         self.screen = in_screen
         self.pos_x = in_pos_x
         self.pos_y = in_pos_y
-        self.health = 0
+        self.health = 5
         self.gun_time = 3
         self.shoot_time = 0
         self.tank_image = pg.transform.scale(pg.image.load("../resources/images/tank_red.png"),
@@ -35,6 +35,13 @@ class EnemyTank:
             self.shells.append(EnemyShell(self.screen, in_x_pos, in_y_pos))
             self.shoot_time = self.gun_time
 
-    def check_collision(self, in_enemy_shells):
-        pass
+    def check_collision(self, in_player_tank):
+        tank_image_rect = pg.Rect(self.pos_x * 75, self.pos_y, 75, 60)
+        for player_shell in in_player_tank.shells:
+            shell_image_rect = pg.Rect((player_shell.pos_x * 75) + 31, player_shell.pos_y, 12, 40)
+            if tank_image_rect.colliderect(shell_image_rect):
+                self.health -= 1
+                self.health = max(self.health, 0)
+                in_player_tank.shells.remove(player_shell)
+                break
 
