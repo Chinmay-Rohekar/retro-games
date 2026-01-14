@@ -13,3 +13,20 @@ game_pause_rect = pg.Rect(10, 5, 40, 40)
 game_home_rect = pg.Rect(250, 5, 40, 40)
 
 game_clock = pg.time.Clock()
+
+player_max_health = 4
+enemy_max_health = 1
+player_shell_speed = 3
+enemy_shell_speed = 2
+player_reload_time = 0.5
+enemy_reload_time = 1
+
+explosion_images = []
+
+
+def add_explosion_images():
+    for count in range(8):
+        image = pg.transform.scale(pg.image.load(f"..//resources//images//exp_0{count}.png"),
+                                   (75, 75)).convert_alpha()
+        explosion_images.append(image)
+

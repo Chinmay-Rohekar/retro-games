@@ -1,9 +1,11 @@
 # Import the necessary libraries
 import pygame as pg
 from values import screen_dims, game_pause_rect, game_home_rect, game_clock
+from values import player_max_health, add_explosion_images
 from start_screen import StartScreen
 from game_screen import GameScreen
 from pause_screen import PauseScreen
+from over_screen import OverScreen
 from tank import Tank
 from enemy_tank import EnemyTank
 
@@ -20,7 +22,9 @@ pg.mixer.init()
 start_screen = StartScreen(screen)
 game_screen = GameScreen(screen)
 pause_screen = PauseScreen(screen)
-screens = {'start': start_screen, 'game': game_screen, 'pause': pause_screen}
+over_screen = OverScreen(screen)
+screens = {'start': start_screen, 'game': game_screen, 'pause': pause_screen,
+           'over': over_screen}
 current_screen = screens['start']
 current_screen.start_music()
 
@@ -28,13 +32,23 @@ current_screen.start_music()
 player_tank = Tank(screen, 0, 350)
 enemy_tank = EnemyTank(screen, 0, 50)
 
+# Initialize Explosion Images
+add_explosion_images()
+
 # Important Functions
+# Function to change the screen. This is done to change the music as well
 def change_screen(in_close_screen, in_open_screen):
     global current_screen
     current_screen = in_open_screen
     if in_close_screen is not None:
         in_close_screen.stop_music()
     in_open_screen.start_music()
+
+# Function to start a new game
+def start_new_game():
+    player_tank.health = player_max_health
+    player_tank.score = 0
+
 
 # Main Loop
 running = True
@@ -67,23 +81,43 @@ while running:
         mouse_x, mouse_y = pg.mouse.get_pos()
         # Checking Mouse Position for Button CLicks
         if current_screen == start_screen:
+            # Start a New Game
             if start_screen.button_start_rect.collidepoint(mouse_x, mouse_y):
+                start_new_game()
                 change_screen(screens['start'], screens['game'])
+            # Quit the Game
             elif start_screen.button_quit_rect.collidepoint(mouse_x, mouse_y):
                 running = False
 
         if current_screen == game_screen:
+            # Pause the current Game
             if game_pause_rect.collidepoint(mouse_x, mouse_y):
                 change_screen(screens['game'], screens['pause'])
+            # Return to Main Screen
             elif game_home_rect.collidepoint(mouse_x, mouse_y):
                 change_screen(screens['game'], screens['start'])
 
         if current_screen == pause_screen:
+            # Resume the Current Game
             if pause_screen.button_resume_rect.collidepoint(mouse_x, mouse_y):
                 change_screen(screens['pause'], screens['game'])
+            # Return to Main Screen
             elif pause_screen.button_main_rect.collidepoint(mouse_x, mouse_y):
                 change_screen(screens['pause'], screens['start'])
+            # Quit the Game
             elif pause_screen.button_quit_rect.collidepoint(mouse_x, mouse_y):
+                running = False
+
+        if current_screen == over_screen:
+            # Start a New Game
+            if over_screen.button_new_rect.collidepoint(mouse_x, mouse_y):
+                start_new_game()
+                change_screen(screens['over'], screens['game'])
+            # Return to Main Screen
+            elif over_screen.button_main_rect.collidepoint(mouse_x, mouse_y):
+                change_screen(screens['over'], screens['start'])
+            # Quit the Game
+            elif over_screen.button_quit_rect.collidepoint(mouse_x, mouse_y):
                 running = False
 
 
@@ -108,11 +142,12 @@ while running:
     if current_screen == game_screen:
         player_tank.draw_tank()
         enemy_tank.draw_tank()
-        player_tank.check_collision(enemy_tank)
+        player_tank.check_collision_tank(enemy_tank)
+        player_tank.check_collision_shell(enemy_tank)
         enemy_tank.check_collision(player_tank)
         if player_tank.health == 0:
             # Game Over
-            pass
+            current_screen = over_screen
 
     pg.display.flip()
 
