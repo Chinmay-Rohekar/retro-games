@@ -1,5 +1,6 @@
 import pygame as pg
-from values import colors, player_max_health, screen_dims, player_shell_speed, player_reload_time
+from values import colors, player_max_health, screen_dims, player_shell_speed
+from values import player_reload_time, explosion_images
 from shell import Shell
 
 class Tank:
@@ -14,12 +15,14 @@ class Tank:
                                         (75, 120))
         self.shells = []
         self.fired = True
+        self.gun_time = 0
         self.gun_sound = pg.mixer.Sound("..//resources//music//tank_shot_sound.mp3")
         self.gun_sound.set_volume(1.0)
         self.score = 0
         self.explosion_sound = pg.mixer.Sound("..//resources//music//tank_explosion_sound.mp3")
         self.explosion_sound.set_volume(1.0)
-        self.gun_time = 0
+        self.explode = False
+        self.explode_frame = 0
 
     def set_health(self, in_health):
         self.health = in_health
@@ -41,6 +44,17 @@ class Tank:
             else:
                 shell.draw_shell()
 
+        if self.explode and self.explode_frame <= len(explosion_images)*4:
+            if self.explode_frame == len(explosion_images)*4:
+                self.explode = False
+                self.explode_frame = 0
+
+            else:
+                self.screen.blit(explosion_images[self.explode_frame//4],
+                                 (self.pos_x * 75, self.pos_y+10))
+                self.explode_frame += 1
+
+
     def shoot_shell(self, in_gun_time, in_x_pos, in_y_pos):
         self.gun_time = in_gun_time
         if self.gun_time-self.shoot_time >= player_reload_time:
@@ -57,6 +71,8 @@ class Tank:
                 self.health = max(self.health, 0)
                 in_enemy_tank.shells.remove(enemy_shell)
                 self.explosion_sound.play()
+                self.explode = True
+                self.explode_frame = 0
 
     def check_collision_shell(self, in_enemy_tank):
         for enemy_shell in in_enemy_tank.shells:
@@ -66,8 +82,9 @@ class Tank:
                 if shell_image_rect.colliderect(player_shell_rect):
                     in_enemy_tank.shells.remove(enemy_shell)
                     self.shells.remove(player_shell)
+                    self.increase_score(10)
 
 
-    def increase_score(self):
-        self.score += 1
+    def increase_score(self, in_val):
+        self.score += in_val
 

@@ -22,10 +22,14 @@ class OverScreen:
         self.button_quit_rect = pg.Rect(60, 305, 180, 40)
         self.buttons = [self.button_new_game, self.button_main, self.button_quit]
         self.music_file = "..//resources//music//start_screen_music.mp3"
+        self.final_score = 0
 
     def draw_screen(self):
         self.screen.fill(colors['WHITE'])
         self.screen.blit(self.image, (0, 0))
+        final_score_text = self.font.render("{}".format(self.final_score), True, colors['WARM_GOLD'])
+        final_score_rect = final_score_text.get_rect(center=(screen_dims[0] // 2, 128))
+        self.screen.blit(final_score_text, final_score_rect)
         for button in self.buttons:
             button.draw_button()
 

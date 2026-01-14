@@ -46,9 +46,11 @@ def change_screen(in_close_screen, in_open_screen):
 
 # Function to start a new game
 def start_new_game():
+    global player_tank, enemy_tank
+    player_tank = Tank(screen, 0, 350)
+    enemy_tank = EnemyTank(screen, 0, 50)
     player_tank.health = player_max_health
     player_tank.score = 0
-
 
 # Main Loop
 running = True
@@ -64,16 +66,17 @@ while running:
 
         # Handle Key Press Events
         if event.type == pg.KEYDOWN:
-            if event.key == pg.K_LEFT:
-                player_tank.pos_x -= 1
-                player_tank.pos_x = max(0, min(player_tank.pos_x, 3))
-            elif event.key == pg.K_RIGHT:
-                player_tank.pos_x += 1
-                player_tank.pos_x = max(0, min(player_tank.pos_x, 3))
-            elif event.key == pg.K_SPACE:
-                player_tank.shoot_shell(elapsed_sec, player_tank.pos_x, 320)
-            elif event.key == pg.K_b:
-                enemy_tank.shoot_shell(elapsed_sec, enemy_tank.pos_x, 160)
+            if player_tank is not None:
+                if event.key == pg.K_LEFT:
+                    player_tank.pos_x -= 1
+                    player_tank.pos_x = max(0, min(player_tank.pos_x, 3))
+                elif event.key == pg.K_RIGHT:
+                    player_tank.pos_x += 1
+                    player_tank.pos_x = max(0, min(player_tank.pos_x, 3))
+                elif event.key == pg.K_SPACE:
+                    player_tank.shoot_shell(elapsed_sec, player_tank.pos_x, 320)
+                elif event.key == pg.K_b:
+                    enemy_tank.shoot_shell(elapsed_sec, enemy_tank.pos_x, 160)
 
     # Handle Mouse Clicks on Buttons
     mouse_buttons = pg.mouse.get_pressed()
@@ -136,18 +139,22 @@ while running:
             else:
                 button.hover_state = False
 
+
     current_screen.draw_screen()
 
-    # Drawing the Player Tank
+    # Drawing the Tanks and Shells
     if current_screen == game_screen:
         player_tank.draw_tank()
         enemy_tank.draw_tank()
+        enemy_tank.shoot_shell(elapsed_sec, enemy_tank.pos_x, 160)
+        enemy_tank.move_tank(elapsed_sec)
         player_tank.check_collision_tank(enemy_tank)
         player_tank.check_collision_shell(enemy_tank)
         enemy_tank.check_collision(player_tank)
         if player_tank.health == 0:
             # Game Over
             current_screen = over_screen
+            over_screen.final_score = player_tank.score
 
     pg.display.flip()
 

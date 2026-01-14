@@ -19,7 +19,8 @@ enemy_max_health = 1
 player_shell_speed = 3
 enemy_shell_speed = 2
 player_reload_time = 0.5
-enemy_reload_time = 1
+enemy_reload_time = 3
+enemy_move_time = 2
 
 explosion_images = []
 

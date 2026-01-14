@@ -1,7 +1,8 @@
 import pygame as pg
 from enemy_shell import EnemyShell
 from values import enemy_max_health, enemy_shell_speed, enemy_reload_time
-from values import explosion_images
+from values import explosion_images, enemy_move_time
+from random import choice
 
 class EnemyTank:
     def __init__(self, in_screen, in_pos_x, in_pos_y):
@@ -10,8 +11,9 @@ class EnemyTank:
         self.pos_x = in_pos_x
         self.pos_y = in_pos_y
         self.health = enemy_max_health
-        self.gun_time = 3
+        self.current_time = 3
         self.shoot_time = 0
+        self.move_time = 0
         self.tank_image = pg.transform.scale(pg.image.load("../resources/images/tank_red.png"),
                                          (75, 120))
         self.shells = []
@@ -40,19 +42,22 @@ class EnemyTank:
             if self.explode_frame == len(explosion_images)*4:
                 self.explode = False
                 self.explode_frame = 0
+                poss_pos = [0, 1, 2, 3]
+                poss_pos.remove(self.pos_x)
+                self.pos_x = choice(poss_pos)
 
             else:
                 self.screen.blit(explosion_images[self.explode_frame//4],
-                                 (self.pos_x * 75, self.pos_y))
+                                 (self.pos_x * 75, self.pos_y+20))
                 self.explode_frame += 1
 
 
     def shoot_shell(self, in_gun_time, in_x_pos, in_y_pos):
-        self.gun_time = in_gun_time
-        if self.gun_time-self.shoot_time >= enemy_reload_time:
+        self.current_time = in_gun_time
+        if self.current_time-self.shoot_time >= enemy_reload_time:
             self.shells.append(EnemyShell(self.screen, in_x_pos, in_y_pos))
             self.gun_sound.play()
-            self.shoot_time = self.gun_time
+            self.shoot_time = self.current_time
 
     def check_collision(self, in_player_tank):
         tank_image_rect = pg.Rect(self.pos_x * 75, self.pos_y, 75, 60)
@@ -62,12 +67,14 @@ class EnemyTank:
                 self.health -= 1
                 self.health = max(self.health, 0)
                 in_player_tank.shells.remove(player_shell)
-                in_player_tank.increase_score()
+                in_player_tank.increase_score(100)
                 self.explosion_sound.play()
-
                 self.explode = True
                 self.explode_frame = 0
 
-    def draw_explosion(self):
-        pass
-
+    def move_tank(self, in_move_time):
+        self.current_time = in_move_time
+        if self.current_time - self.move_time >= enemy_move_time:
+            self.pos_x += choice([-1, 1])
+            self.pos_x = max(min(self.pos_x, 3), 0)
+            self.move_time = self.current_time
