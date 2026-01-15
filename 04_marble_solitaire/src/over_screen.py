@@ -4,10 +4,18 @@ from values import colors, screen_dims
 class OverScreen:
     def __init__(self, in_screen):
         self.screen = in_screen
-        self.image = pg.transform.scale(pg.image.load("../resources/images/over_screen_image.png"),
-                                        screen_dims).convert_alpha()
+        self.back_image = pg.transform.scale(pg.image.load("../resources/images/over_screen_image.png"),
+                                             screen_dims).convert_alpha()
+        self.music_file = "..//resources//music//over_screen_music.mp3"
 
     def draw_screen(self):
         self.screen.fill(colors['WHITE'])
-        self.screen.blit(self.image, (0, 0))
+        self.screen.blit(self.back_image, (0, 0))
 
+    def start_music(self):
+        pg.mixer.music.load(self.music_file)
+        pg.mixer.music.set_volume(0.5)  # 0.0 to 1.0
+        pg.mixer.music.play(-1)
+
+    def stop_music(self):
+        pg.mixer.music.stop()
