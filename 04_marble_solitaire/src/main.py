@@ -82,6 +82,9 @@ while running:
                 elif (((mouse_pos[0] - game_settings_circle[0]) ** 2 + (mouse_pos[1] - game_settings_circle[1]) ** 2)
                         <= game_settings_circle[2] ** 2):
                     change_screen('game', 'settings')
+                else:
+                    # Handle all the mouse clicks on the board
+                    game_screen.handle_mouse_clicks(mouse_pos)
 
             elif current_screen == screens['settings']:
                 if settings_return_rect.collidepoint(mouse_pos):
@@ -103,7 +106,6 @@ while running:
                 elif pause_quit_rect.collidepoint(mouse_pos):
                     # Quit the Game
                     running = False
-
 
 
     # Update the Screen

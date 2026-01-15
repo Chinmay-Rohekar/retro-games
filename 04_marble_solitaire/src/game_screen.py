@@ -22,3 +22,6 @@ class GameScreen:
 
     def stop_music(self):
         pg.mixer.music.stop()
+
+    def handle_mouse_clicks(self, in_mouse_pos):
+        self.game_board.handle_mouse_clicks(in_mouse_pos)
