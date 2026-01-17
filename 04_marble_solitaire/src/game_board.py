@@ -1,36 +1,17 @@
 import pygame as pg
 from values import colors, screen_dims
+import values
 
 class GameBoard:
     def __init__(self, in_screen):
         self.screen = in_screen
         self.font = pg.font.Font(None, 45)
-        self.grid = [[-2, -2, 1, 1, 1, -2, -2],
-                     [-2, -2, 1, 1, 1, -2, -2],
-                     [ 1,  1, 1, 1, 1,  1,  1],
-                     [ 1,  1, 1, 0, 1,  1,  1],
-                     [ 1,  1, 1, 1, 1,  1,  1],
-                     [-2, -2, 1, 1, 1, -2, -2],
-                     [-2, -2, 1, 1, 1, -2, -2] ]
-        self.points = [[None,       None,       (163, 166), (200, 166), (237, 166), None,       None],
-                       [None,       None,       (163, 198), (200, 198), (237, 198), None,       None],
-                       [( 87, 230), (125, 230), (163, 230), (200, 230), (237, 230), (275, 230), (313, 230)],
-                       [( 87, 265), (125, 265), (163, 265), (200, 265), (237, 265), (275, 265), (314, 265)],
-                       [( 87, 300), (125, 300), (163, 300), (200, 300), (237, 300), (275, 300), (314, 300)],
-                       [None,       None,       (163, 332), (200, 332), (237, 332), None,       None],
-                       [None,       None,       (163, 368), (200, 368), (237, 368), None,       None]]
+        self.grid = []
+        self.points = []
         self.marble_rects = []
-        for i in range(7):
-            temp = []
-            for j in range(7):
-                if self.points[i][j] is None:
-                    temp.append(None)
-                else:
-                    temp.append([pg.Rect(self.points[i][j][0]-15, self.points[i][j][1]-15, 30, 30), (i, j)])
-            self.marble_rects.append(temp)
-
-        self.marble_image = pg.transform.scale(pg.image.load("../resources/images/marble_blue_tp.png"),
-                                               (30, 30)).convert_alpha()
+        self.board_reset()
+        self.marble_path = "../resources/images/marble_blue_tp.png"
+        self.marble_image = pg.transform.scale(pg.image.load(self.marble_path),(30, 30)).convert_alpha()
         self.win_image = pg.transform.scale(pg.image.load("..//resources//images//menu_win.png"),
                                             (300, 400)).convert_alpha()
         self.lose_image = pg.transform.scale(pg.image.load("..//resources//images//menu_lost.png"),
@@ -52,26 +33,27 @@ class GameBoard:
                         self.screen.blit(self.marble_image,
                                          (self.points[i][j][0]-15, self.points[i][j][1]-15))
 
-        move_text = self.font.render("{}".format(self.move_count), True, colors['RED'])
-        move_rect = move_text.get_rect(center=(180, 492))
+        move_text = self.font.render(str(self.move_count).zfill(2), True, colors['RED'])
+        move_rect = move_text.get_rect(center=(260, 497))
         self.screen.blit(move_text, move_rect)
-
-        # When the Game has ended show the menu image on the top
-        if self.game_state == 'off':
-            if self.marble_count == 1:
-                # Show the win menu
-                self.screen.blit(self.win_image, (50, 100))
-            else:
-                # Show the lost menu
-                self.screen.blit(self.lose_image, (50, 100))
 
         # Draw the selected Marble a bit bigger
         if self.selected_marble is not None:
             rectangle = self.selected_marble[0]
-            big_marble_img = pg.transform.scale(pg.image.load("..//resources//images//marble_blue_tp.png"),
-                                                (38, 38)).convert_alpha()
-            self.screen.blit(big_marble_img, (rectangle[0]-4, rectangle[1]-4))
-            # pg.draw.rect(self.screen, colors['RED'], self.selected_marble[0], width=3)
+            big_marble_img = pg.transform.scale(pg.image.load(self.marble_path),(40, 40)).convert_alpha()
+            self.screen.blit(big_marble_img, (rectangle[0]-5, rectangle[1]-5))
+
+        # When the Game has ended show the menu image on the top
+        if self.game_state == 'off':
+            if self.marble_count == 1:
+                # Game has been won
+                return 2
+            else:
+                # Game has been lost
+                return 1
+
+        # Game is still ongoing
+        return 0
 
     def handle_mouse_clicks(self, in_mouse_pos):
         for row in self.marble_rects:       # Get the Row inside the Marble Rectangles
@@ -130,13 +112,10 @@ class GameBoard:
                     self.move_count += 1
 
             self.selected_marble = None
-            if not self.check_if_move_possible():
-                self.game_state = 'off'
-                if self.marble_count == 1:
-                    print("You Win")
-                else:
-                    print("You Lose")
 
+        if not self.check_if_move_possible():
+            self.game_state = 'off'
+            self.draw_board()
 
     def check_if_move_possible(self):
         # This function checks that there exists at least one move in the system
@@ -171,3 +150,40 @@ class GameBoard:
 
         return False
 
+    def board_reset(self):
+        self.grid = [[-2, -2, 1, 1, 1, -2, -2],
+                     [-2, -2, 1, 1, 1, -2, -2],
+                     [1, 1, 1, 1, 1, 1, 1],
+                     [1, 1, 1, 0, 1, 1, 1],
+                     [1, 1, 1, 1, 1, 1, 1],
+                     [-2, -2, 1, 1, 1, -2, -2],
+                     [-2, -2, 1, 1, 1, -2, -2]]
+        self.points = [[None, None, (163, 168), (200, 168), (237, 168), None, None],
+                       [None, None, (163, 200), (200, 200), (237, 200), None, None],
+                       [(87, 232), (125, 232), (163, 232), (200, 232), (237, 232), (275, 232), (313, 232)],
+                       [(87, 267), (125, 267), (163, 267), (200, 267), (237, 267), (275, 267), (314, 267)],
+                       [(87, 302), (125, 302), (163, 302), (200, 302), (237, 302), (275, 302), (314, 302)],
+                       [None, None, (163, 334), (200, 334), (237, 334), None, None],
+                       [None, None, (163, 370), (200, 370), (237, 370), None, None]]
+        self.marble_rects = []
+        for i in range(7):
+            temp = []
+            for j in range(7):
+                if self.points[i][j] is None:
+                    temp.append(None)
+                else:
+                    temp.append([pg.Rect(self.points[i][j][0] - 15, self.points[i][j][1] - 15, 30, 30), (i, j)])
+            self.marble_rects.append(temp)
+
+        self.selected_marble = None
+        self.possible_moves = []
+        self.jumped_marbles = []
+        self.marble_count = 32
+        self.move_count = 0
+        self.game_state = 'on'
+        self.game_timer = 0
+
+    def set_marble_color(self, in_color):
+        self.marble_path = "../resources/images/marble_{}_tp.png".format(in_color)
+        self.marble_image = pg.transform.scale(pg.image.load(self.marble_path),(30, 30)).convert_alpha()
+        values.marble_color = in_color
