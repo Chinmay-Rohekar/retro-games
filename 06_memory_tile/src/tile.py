@@ -12,3 +12,4 @@ class Tile:
         image_path = "..//resources//images//tile_img_{}_tp.png".format(in_image_num)
         self.image =  pg.transform.scale(pg.image.load(image_path),
                                          tile_dimensions).convert_alpha()
+

@@ -2,6 +2,7 @@ import pygame as pg
 from values import colors
 from tile import Tile
 from random import shuffle
+import values
 
 class TileBoard:
     def __init__(self, in_screen):
@@ -32,6 +33,8 @@ class TileBoard:
                 temp_row.append(temp_rect)
             self.tile_rects.append(temp_row)
         self.tiles_selected = []
+        self.flip_time = 0
+        self.tiles_unmatched = False
 
     def draw_board(self):
         for i in range(4):
@@ -48,16 +51,35 @@ class TileBoard:
             for j in range(4):
                 # Collision has been detected
                 if self.tile_rects[i][j].collidepoint(in_mouse_pos):
+                    # No tile was selected yet
                     if len(self.tiles_selected) == 0:
+                        # Flip the tile
                         self.tiles[i][j].status = 1
-                        print("{},{}".format(i, j))
+                        # Add the tile to the selected tiles list
                         self.tiles_selected.append(self.tiles[i][j])
-                        print(self.tiles_selected)
 
-
-                    elif len(self.tiles_selected) == 2:
+                    # One tile has already been selected
+                    elif len(self.tiles_selected) == 1:
                         self.tiles[i][j].status = 1
+                        # Add the tile to the selected tiles list
+                        self.tiles_selected.append(self.tiles[i][j])
+                        # Both the selected tiles are same
+                        if self.tiles_selected[0].image_num == self.tiles_selected[1].image_num:
+                            print("Pair Found")
+                            self.pair_animation()
+                            self.tiles_selected[0].status = 2
+                            self.tiles_selected[1].status = 2
+                        else:
+                            print("Not a Pair")
+                            self.reset_unmatched_tiles()
+                            self.tiles_unmatched = True
+                            self.tiles_selected[0].status = 0
+                            self.tiles_selected[1].status = 0
 
-                        # pg.time.delay(1000)
-                        # self.tiles[i][j].status = 0
-                        # self.tiles[self.tiles_selected[0]][self.tiles_selected[1]].status = 0
+                        self.tiles_selected.pop()
+
+    def reset_unmatched_tiles(self):
+        pass
+
+    def pair_animation(self):
+        pass
